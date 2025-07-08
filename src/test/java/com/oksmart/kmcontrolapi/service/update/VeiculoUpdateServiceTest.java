@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -41,7 +42,8 @@ class VeiculoUpdateServiceTest {
                 .cor("Vermelho")
                 .placa("ABC1234")
                 .kmInicial(10000)
-                .dataRegistro(LocalDate.now().minusDays(1))
+                .kmAtual(10001)
+                .dataRegistro(LocalDate.of(2025, 6, 30))
                 .build();
 
         VeiculoUpdateRequest request = VeiculoUpdateRequest.builder()
@@ -50,27 +52,57 @@ class VeiculoUpdateServiceTest {
                 .cor("Preto")
                 .placa("XYZ9999")
                 .kmInicial(12000)
-                .dataRegistro(LocalDate.now())
+                .dataRegistro(LocalDate.of(2025, 7, 1))
+                .condutorPrincipal("João Silva")
+                .condutorResponsavel("Carlos Souza")
+                .dataAtual(LocalDate.of(2025, 7, 2))
+                .diarias(15)
+                .franquiaKm(3000)
+                .locadora("Localiza")
+                .numeroContrato("CT123456")
+                .osCliente("OS98765")
+                .valorAluguel(new BigDecimal("1999.99"))
                 .build();
 
         Veiculo atualizado = Veiculo.builder()
                 .id(id)
-                .marca("Toyota")
-                .modelo("Corolla")
-                .cor("Preto")
-                .placa("XYZ9999")
-                .kmInicial(12000)
+                .marca(request.getMarca())
+                .modelo(request.getModelo())
+                .cor(request.getCor())
+                .placa(request.getPlaca())
+                .kmInicial(request.getKmInicial())
                 .dataRegistro(request.getDataRegistro())
+                .condutorPrincipal(request.getCondutorPrincipal())
+                .condutorResponsavel(request.getCondutorResponsavel())
+                .dataAtual(request.getDataAtual())
+                .diarias(request.getDiarias())
+                .franquiaKm(request.getFranquiaKm())
+                .locadora(request.getLocadora())
+                .numeroContrato(request.getNumeroContrato())
+                .osCliente(request.getOsCliente())
+                .valorAluguel(request.getValorAluguel())
                 .build();
 
         when(veiculoRepository.findById(id)).thenReturn(Optional.of(existente));
         when(veiculoRepository.save(any(Veiculo.class))).thenReturn(atualizado);
 
+        // Act
         VeiculoResponse response = veiculoUpdateService.atualizar(id, request);
 
+        // Assert
         assertNotNull(response);
         assertEquals("Toyota", response.getMarca());
         assertEquals("Corolla", response.getModelo());
+        assertEquals("João Silva", response.getCondutorPrincipal());
+        assertEquals("Carlos Souza", response.getCondutorResponsavel());
+        assertEquals(LocalDate.of(2025, 7, 2), response.getDataAtual());
+        assertEquals(15, response.getDiarias());
+        assertEquals(3000, response.getFranquiaKm());
+        assertEquals("Localiza", response.getLocadora());
+        assertEquals("CT123456", response.getNumeroContrato());
+        assertEquals("OS98765", response.getOsCliente());
+        assertEquals(new BigDecimal("1999.99"), response.getValorAluguel());
+
         verify(veiculoRepository).save(any(Veiculo.class));
     }
 

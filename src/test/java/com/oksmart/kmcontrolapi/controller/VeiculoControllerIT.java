@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.*;
@@ -47,6 +48,15 @@ class VeiculoControllerIT {
                 .placa("FIU1234")
                 .kmInicial(10000)
                 .dataRegistro(LocalDate.now())
+                .condutorPrincipal("Carlos Silva")
+                .condutorResponsavel("Ana Paula")
+                .dataAtual(LocalDate.now())
+                .diarias(5)
+                .franquiaKm(2000)
+                .locadora("Localiza")
+                .numeroContrato("CT12345")
+                .osCliente("OS6789")
+                .valorAluguel(new BigDecimal("1500.00"))
                 .build();
 
         mockMvc.perform(post("/veiculos")
@@ -54,7 +64,9 @@ class VeiculoControllerIT {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.placa").value("FIU1234"));
+                .andExpect(jsonPath("$.placa").value("FIU1234"))
+                .andExpect(jsonPath("$.condutorPrincipal").value("Carlos Silva"))
+                .andExpect(jsonPath("$.diarias").value(5));
     }
 
     @Test
@@ -66,6 +78,15 @@ class VeiculoControllerIT {
                 .placa("FOR1234")
                 .kmInicial(8000)
                 .dataRegistro(LocalDate.now())
+                .condutorPrincipal("Lucas")
+                .condutorResponsavel("Marina")
+                .dataAtual(LocalDate.now())
+                .diarias(3)
+                .franquiaKm(1000)
+                .locadora("Unidas")
+                .numeroContrato("CT67890")
+                .osCliente("OS1111")
+                .valorAluguel(new BigDecimal("1800.00"))
                 .build();
 
         veiculoRepository.save(v1);
@@ -73,7 +94,8 @@ class VeiculoControllerIT {
         mockMvc.perform(get("/veiculos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].placa").value("FOR1234"));
+                .andExpect(jsonPath("$[0].placa").value("FOR1234"))
+                .andExpect(jsonPath("$[0].locadora").value("Unidas"));
     }
 
     @Test
@@ -92,7 +114,6 @@ class VeiculoControllerIT {
         mockMvc.perform(delete("/veiculos/{id}", salvo.getId()))
                 .andExpect(status().isNoContent());
 
-        // Verifica que foi excluído
         mockMvc.perform(get("/veiculos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
@@ -100,7 +121,6 @@ class VeiculoControllerIT {
 
     @Test
     void deveAtualizarVeiculoComPUT() throws Exception {
-        // Cria e salva um veículo original
         Veiculo original = Veiculo.builder()
                 .marca("Ford")
                 .modelo("Fiesta")
@@ -112,7 +132,6 @@ class VeiculoControllerIT {
 
         Veiculo salvo = veiculoRepository.save(original);
 
-        // Novo conteúdo para atualizar
         VeiculoCreateRequest atualizado = VeiculoCreateRequest.builder()
                 .marca("Hyundai")
                 .modelo("HB20")
@@ -120,6 +139,15 @@ class VeiculoControllerIT {
                 .placa("NEW5678")
                 .kmInicial(20000)
                 .dataRegistro(LocalDate.of(2025, 7, 1))
+                .condutorPrincipal("Rafael Lima")
+                .condutorResponsavel("Paula Costa")
+                .dataAtual(LocalDate.of(2025, 7, 2))
+                .diarias(10)
+                .franquiaKm(2500)
+                .locadora("Movida")
+                .numeroContrato("CT54321")
+                .osCliente("OS2222")
+                .valorAluguel(new BigDecimal("2300.00"))
                 .build();
 
         mockMvc.perform(put("/veiculos/{id}", salvo.getId())
@@ -129,7 +157,9 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$.id").value(salvo.getId()))
                 .andExpect(jsonPath("$.marca").value("Hyundai"))
                 .andExpect(jsonPath("$.modelo").value("HB20"))
-                .andExpect(jsonPath("$.placa").value("NEW5678"));
+                .andExpect(jsonPath("$.placa").value("NEW5678"))
+                .andExpect(jsonPath("$.condutorPrincipal").value("Rafael Lima"))
+                .andExpect(jsonPath("$.locadora").value("Movida"));
     }
 
     @Test

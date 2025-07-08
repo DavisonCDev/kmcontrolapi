@@ -27,6 +27,17 @@ public class VeiculoUpdateService {
         veiculo.setKmInicial(request.getKmInicial());
         veiculo.setDataRegistro(request.getDataRegistro());
 
+        veiculo.setCondutorPrincipal(request.getCondutorPrincipal());
+        veiculo.setCondutorResponsavel(request.getCondutorResponsavel());
+        veiculo.setDataAtual(request.getDataAtual());
+        veiculo.setDiarias(request.getDiarias());
+        veiculo.setFranquiaKm(request.getFranquiaKm());
+        veiculo.setLocadora(request.getLocadora());
+        veiculo.setNumeroContrato(request.getNumeroContrato());
+        veiculo.setOsCliente(request.getOsCliente());
+        veiculo.setValorAluguel(request.getValorAluguel());
+        veiculo.setKmAtual(request.getKmAtual());
+
         Veiculo atualizado = veiculoRepository.save(veiculo);
 
         return VeiculoResponse.builder()
@@ -37,6 +48,15 @@ public class VeiculoUpdateService {
                 .placa(atualizado.getPlaca())
                 .kmInicial(atualizado.getKmInicial())
                 .dataRegistro(atualizado.getDataRegistro())
+                .condutorPrincipal(atualizado.getCondutorPrincipal())
+                .condutorResponsavel(atualizado.getCondutorResponsavel())
+                .dataAtual(atualizado.getDataAtual())
+                .diarias(atualizado.getDiarias())
+                .franquiaKm(atualizado.getFranquiaKm())
+                .locadora(atualizado.getLocadora())
+                .numeroContrato(atualizado.getNumeroContrato())
+                .osCliente(atualizado.getOsCliente())
+                .valorAluguel(atualizado.getValorAluguel())
                 .build();
     }
 }

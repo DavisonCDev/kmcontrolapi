@@ -5,10 +5,10 @@ package com.oksmart.kmcontrolapi.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "veiculos")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,10 +24,22 @@ public class Veiculo {
     private String modelo;
     private String cor;
     private String placa;
-
-    @Column(name = "km_inicial")
     private Integer kmInicial;
-
-    @Column(name = "data_registro")
     private LocalDate dataRegistro;
+
+    // Novos campos
+    private String condutorPrincipal;
+    private String condutorResponsavel;
+    private LocalDate dataAtual;
+    private Integer diarias;
+    private Integer franquiaKm;
+    private String locadora;
+    private String numeroContrato;
+    private String osCliente;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal valorAluguel;
+
+    @Column(nullable = true)
+    private Integer kmAtual;
 }

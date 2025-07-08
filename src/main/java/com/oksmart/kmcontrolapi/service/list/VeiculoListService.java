@@ -28,6 +28,7 @@ public class VeiculoListService {
                         .cor(veiculo.getCor())
                         .placa(veiculo.getPlaca())
                         .kmInicial(veiculo.getKmInicial())
+                        .kmAtual(veiculo.getKmAtual())
                         .dataRegistro(veiculo.getDataRegistro())
                         .build())
                 .collect(Collectors.toList());
