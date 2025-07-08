@@ -47,6 +47,7 @@ class VeiculoControllerIT {
                 .cor("Vermelho")
                 .placa("FIU1234")
                 .kmInicial(10000)
+                .kmAtual(10001)
                 .dataRegistro(LocalDate.now())
                 .condutorPrincipal("Carlos Silva")
                 .condutorResponsavel("Ana Paula")
@@ -77,6 +78,7 @@ class VeiculoControllerIT {
                 .cor("Preto")
                 .placa("FOR1234")
                 .kmInicial(8000)
+                .kmAtual(8001)
                 .dataRegistro(LocalDate.now())
                 .condutorPrincipal("Lucas")
                 .condutorResponsavel("Marina")
@@ -106,6 +108,7 @@ class VeiculoControllerIT {
                 .cor("Branco")
                 .placa("VWG1234")
                 .kmInicial(9000)
+                .kmAtual(9001)
                 .dataRegistro(LocalDate.now())
                 .build();
 
@@ -127,6 +130,7 @@ class VeiculoControllerIT {
                 .cor("Prata")
                 .placa("OLD1234")
                 .kmInicial(15000)
+                .kmAtual(15001)
                 .dataRegistro(LocalDate.of(2023, 1, 10))
                 .build();
 
@@ -138,6 +142,7 @@ class VeiculoControllerIT {
                 .cor("Azul")
                 .placa("NEW5678")
                 .kmInicial(20000)
+                .kmAtual(20001)
                 .dataRegistro(LocalDate.of(2025, 7, 1))
                 .condutorPrincipal("Rafael Lima")
                 .condutorResponsavel("Paula Costa")
@@ -172,6 +177,7 @@ class VeiculoControllerIT {
                 .cor("Preto")
                 .placa("HND9999")
                 .kmInicial(25000)
+                .kmAtual(25001)
                 .dataRegistro(LocalDate.now())
                 .build();
 
