@@ -2,6 +2,7 @@
 
 package com.oksmart.kmcontrolapi.dto;
 
+import com.oksmart.kmcontrolapi.model.Veiculo;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -34,4 +35,7 @@ public class VeiculoResponse {
     private BigDecimal valorAluguel;
     private Integer kmAtual;
 
+    public static VeiculoResponse fromEntity(Veiculo veiculo) {
+        return null;
+    }
 }

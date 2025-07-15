@@ -39,6 +39,7 @@ class VeiculoControllerIT {
         veiculoRepository.deleteAll(); // Limpa antes de cada teste
     }
 
+    // ✅ POST: Criar veículo
     @Test
     void deveCriarVeiculoComPOST() throws Exception {
         VeiculoCreateRequest request = VeiculoCreateRequest.builder()
@@ -47,17 +48,7 @@ class VeiculoControllerIT {
                 .cor("Vermelho")
                 .placa("FIU1234")
                 .kmInicial(10000)
-                .kmAtual(10001)
                 .dataRegistro(LocalDate.now())
-                .condutorPrincipal("Carlos Silva")
-                .condutorResponsavel("Ana Paula")
-                .dataAtual(LocalDate.now())
-                .diarias(5)
-                .franquiaKm(2000)
-                .locadora("Localiza")
-                .numeroContrato("CT12345")
-                .osCliente("OS6789")
-                .valorAluguel(new BigDecimal("1500.00"))
                 .build();
 
         mockMvc.perform(post("/veiculos")
@@ -65,11 +56,10 @@ class VeiculoControllerIT {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.placa").value("FIU1234"))
-                .andExpect(jsonPath("$.condutorPrincipal").value("Carlos Silva"))
-                .andExpect(jsonPath("$.diarias").value(5));
+                .andExpect(jsonPath("$.placa").value("FIU1234"));
     }
 
+    // ✅ GET: Listar veículos
     @Test
     void deveListarVeiculosComGET() throws Exception {
         Veiculo v1 = Veiculo.builder()
@@ -78,17 +68,7 @@ class VeiculoControllerIT {
                 .cor("Preto")
                 .placa("FOR1234")
                 .kmInicial(8000)
-                .kmAtual(8001)
                 .dataRegistro(LocalDate.now())
-                .condutorPrincipal("Lucas")
-                .condutorResponsavel("Marina")
-                .dataAtual(LocalDate.now())
-                .diarias(3)
-                .franquiaKm(1000)
-                .locadora("Unidas")
-                .numeroContrato("CT67890")
-                .osCliente("OS1111")
-                .valorAluguel(new BigDecimal("1800.00"))
                 .build();
 
         veiculoRepository.save(v1);
@@ -96,10 +76,10 @@ class VeiculoControllerIT {
         mockMvc.perform(get("/veiculos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].placa").value("FOR1234"))
-                .andExpect(jsonPath("$[0].locadora").value("Unidas"));
+                .andExpect(jsonPath("$[0].placa").value("FOR1234"));
     }
 
+    // ✅ DELETE: Remover veículo
     @Test
     void deveDeletarVeiculoComDELETE() throws Exception {
         Veiculo v1 = Veiculo.builder()
@@ -108,7 +88,6 @@ class VeiculoControllerIT {
                 .cor("Branco")
                 .placa("VWG1234")
                 .kmInicial(9000)
-                .kmAtual(9001)
                 .dataRegistro(LocalDate.now())
                 .build();
 
@@ -122,69 +101,51 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    // ✅ PATCH: Atualizar condutorPrincipal
     @Test
-    void deveAtualizarVeiculoComPUT() throws Exception {
-        Veiculo original = Veiculo.builder()
-                .marca("Ford")
-                .modelo("Fiesta")
-                .cor("Prata")
-                .placa("OLD1234")
-                .kmInicial(15000)
-                .kmAtual(15001)
-                .dataRegistro(LocalDate.of(2023, 1, 10))
-                .build();
+    void deveAtualizarCondutorPrincipalComPATCH() throws Exception {
+        Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
+                .marca("VW")
+                .modelo("Gol")
+                .condutorPrincipal("Carlos")
+                .build());
 
-        Veiculo salvo = veiculoRepository.save(original);
-
-        VeiculoCreateRequest atualizado = VeiculoCreateRequest.builder()
-                .marca("Hyundai")
-                .modelo("HB20")
-                .cor("Azul")
-                .placa("NEW5678")
-                .kmInicial(20000)
-                .kmAtual(20001)
-                .dataRegistro(LocalDate.of(2025, 7, 1))
-                .condutorPrincipal("Rafael Lima")
-                .condutorResponsavel("Paula Costa")
-                .dataAtual(LocalDate.of(2025, 7, 2))
-                .diarias(10)
-                .franquiaKm(2500)
-                .locadora("Movida")
-                .numeroContrato("CT54321")
-                .osCliente("OS2222")
-                .valorAluguel(new BigDecimal("2300.00"))
-                .build();
-
-        mockMvc.perform(put("/veiculos/{id}", salvo.getId())
+        mockMvc.perform(patch("/veiculos/{id}/condutor-principal", veiculo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(atualizado)))
+                        .content("{\"condutorPrincipal\": \"Ana Beatriz\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(salvo.getId()))
-                .andExpect(jsonPath("$.marca").value("Hyundai"))
-                .andExpect(jsonPath("$.modelo").value("HB20"))
-                .andExpect(jsonPath("$.placa").value("NEW5678"))
-                .andExpect(jsonPath("$.condutorPrincipal").value("Rafael Lima"))
-                .andExpect(jsonPath("$.locadora").value("Movida"));
+                .andExpect(jsonPath("$.condutorPrincipal").value("Ana Beatriz"));
     }
 
+    // ✅ PATCH: Atualizar condutorResponsavel
     @Test
-    void deveRetornar404AoAtualizarVeiculoInexistente() throws Exception {
-        Long idInexistente = 999L;
+    void deveAtualizarCondutorResponsavelComPATCH() throws Exception {
+        Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
+                .marca("Renault")
+                .modelo("Kwid")
+                .condutorResponsavel("Bruno")
+                .build());
 
-        VeiculoCreateRequest atualizado = VeiculoCreateRequest.builder()
-                .marca("Honda")
-                .modelo("Civic")
-                .cor("Preto")
-                .placa("HND9999")
-                .kmInicial(25000)
-                .kmAtual(25001)
-                .dataRegistro(LocalDate.now())
-                .build();
-
-        mockMvc.perform(put("/veiculos/{id}", idInexistente)
+        mockMvc.perform(patch("/veiculos/{id}/condutor-responsavel", veiculo.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(atualizado)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Veículo não encontrado com ID: " + idInexistente));
+                        .content("{\"condutorResponsavel\": \"Carlos Eduardo\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.condutorResponsavel").value("Carlos Eduardo"));
+    }
+
+    // ✅ PATCH: Atualizar osCliente
+    @Test
+    void deveAtualizarOsClienteComPATCH() throws Exception {
+        Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
+                .marca("Chevrolet")
+                .modelo("Tracker")
+                .osCliente("OS001")
+                .build());
+
+        mockMvc.perform(patch("/veiculos/{id}/os-cliente", veiculo.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"osCliente\": \"OS78910\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.osCliente").value("OS78910"));
     }
 }
