@@ -39,7 +39,7 @@ class VeiculoControllerIT {
         veiculoRepository.deleteAll(); // Limpa antes de cada teste
     }
 
-    // ✅ POST: Criar veículo
+    // POST: Criar veículo
     @Test
     void deveCriarVeiculoComPOST() throws Exception {
         VeiculoCreateRequest request = VeiculoCreateRequest.builder()
@@ -59,7 +59,7 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$.placa").value("FIU1234"));
     }
 
-    // ✅ GET: Listar veículos
+    // GET: Listar veículos
     @Test
     void deveListarVeiculosComGET() throws Exception {
         Veiculo v1 = Veiculo.builder()
@@ -79,7 +79,7 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$[0].placa").value("FOR1234"));
     }
 
-    // ✅ DELETE: Remover veículo
+    // DELETE: Remover veículo
     @Test
     void deveDeletarVeiculoComDELETE() throws Exception {
         Veiculo v1 = Veiculo.builder()
@@ -101,7 +101,7 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$", hasSize(0)));
     }
 
-    // ✅ PATCH: Atualizar condutorPrincipal
+    // PATCH: Atualizar condutorPrincipal
     @Test
     void deveAtualizarCondutorPrincipalComPATCH() throws Exception {
         Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
@@ -117,7 +117,7 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$.condutorPrincipal").value("Ana Beatriz"));
     }
 
-    // ✅ PATCH: Atualizar condutorResponsavel
+    // PATCH: Atualizar condutorResponsavel
     @Test
     void deveAtualizarCondutorResponsavelComPATCH() throws Exception {
         Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
@@ -133,7 +133,7 @@ class VeiculoControllerIT {
                 .andExpect(jsonPath("$.condutorResponsavel").value("Carlos Eduardo"));
     }
 
-    // ✅ PATCH: Atualizar osCliente
+    // PATCH: Atualizar osCliente
     @Test
     void deveAtualizarOsClienteComPATCH() throws Exception {
         Veiculo veiculo = veiculoRepository.save(Veiculo.builder()
