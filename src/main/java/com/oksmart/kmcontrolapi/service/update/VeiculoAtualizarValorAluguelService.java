@@ -10,6 +10,8 @@ import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class VeiculoAtualizarValorAluguelService {
 
@@ -21,6 +23,8 @@ public class VeiculoAtualizarValorAluguelService {
                 .orElseThrow(() -> new VeiculoNotFoundException(id));
 
         veiculo.setValorAluguel(request.getValorAluguel());
+        veiculo.setDataAtual(LocalDate.now()); // ✅ Define automaticamente a data atual
+
         veiculoRepository.save(veiculo);
 
         return VeiculoResponse.fromEntity(veiculo);

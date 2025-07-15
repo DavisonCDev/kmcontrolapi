@@ -24,7 +24,6 @@ public class VeiculoUpdateRequest {
     // Novos campos
     private String condutorPrincipal;
     private String condutorResponsavel;
-    private LocalDate dataAtual;
     private Integer diarias;
     private Integer franquiaKm;
     private String locadora;

@@ -10,6 +10,8 @@ import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 public class VeiculoUpdateService {
@@ -29,7 +31,7 @@ public class VeiculoUpdateService {
 
         veiculo.setCondutorPrincipal(request.getCondutorPrincipal());
         veiculo.setCondutorResponsavel(request.getCondutorResponsavel());
-        veiculo.setDataAtual(request.getDataAtual());
+        veiculo.setDataAtual(LocalDate.now());
         veiculo.setDiarias(request.getDiarias());
         veiculo.setFranquiaKm(request.getFranquiaKm());
         veiculo.setLocadora(request.getLocadora());

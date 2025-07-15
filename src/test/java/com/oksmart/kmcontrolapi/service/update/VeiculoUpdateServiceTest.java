@@ -55,7 +55,6 @@ class VeiculoUpdateServiceTest {
                 .dataRegistro(LocalDate.of(2025, 7, 1))
                 .condutorPrincipal("João Silva")
                 .condutorResponsavel("Carlos Souza")
-                .dataAtual(LocalDate.of(2025, 7, 2))
                 .diarias(15)
                 .franquiaKm(3000)
                 .locadora("Localiza")
@@ -74,7 +73,6 @@ class VeiculoUpdateServiceTest {
                 .dataRegistro(request.getDataRegistro())
                 .condutorPrincipal(request.getCondutorPrincipal())
                 .condutorResponsavel(request.getCondutorResponsavel())
-                .dataAtual(request.getDataAtual())
                 .diarias(request.getDiarias())
                 .franquiaKm(request.getFranquiaKm())
                 .locadora(request.getLocadora())
@@ -95,7 +93,6 @@ class VeiculoUpdateServiceTest {
         assertEquals("Corolla", response.getModelo());
         assertEquals("João Silva", response.getCondutorPrincipal());
         assertEquals("Carlos Souza", response.getCondutorResponsavel());
-        assertEquals(LocalDate.of(2025, 7, 2), response.getDataAtual());
         assertEquals(15, response.getDiarias());
         assertEquals(3000, response.getFranquiaKm());
         assertEquals("Localiza", response.getLocadora());
