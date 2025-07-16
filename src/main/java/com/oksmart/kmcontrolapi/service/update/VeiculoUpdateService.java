@@ -7,6 +7,7 @@ import com.oksmart.kmcontrolapi.dto.VeiculoUpdateRequest;
 import com.oksmart.kmcontrolapi.exception.VeiculoNotFoundException;
 import com.oksmart.kmcontrolapi.model.Veiculo;
 import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
+import com.oksmart.kmcontrolapi.service.historico.RegistroHistoricoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 public class VeiculoUpdateService {
 
     private final VeiculoRepository veiculoRepository;
+    private final RegistroHistoricoService registroHistoricoService;
 
     public VeiculoResponse atualizar(Long id, VeiculoUpdateRequest request) {
         Veiculo veiculo = veiculoRepository.findById(id)
@@ -27,20 +29,27 @@ public class VeiculoUpdateService {
         veiculo.setCor(request.getCor());
         veiculo.setPlaca(request.getPlaca());
         veiculo.setKmInicial(request.getKmInicial());
+        veiculo.setKmAtual(request.getKmAtual());
         veiculo.setDataRegistro(request.getDataRegistro());
-
         veiculo.setCondutorPrincipal(request.getCondutorPrincipal());
         veiculo.setCondutorResponsavel(request.getCondutorResponsavel());
-        veiculo.setDataAtual(LocalDate.now());
         veiculo.setDiarias(request.getDiarias());
         veiculo.setFranquiaKm(request.getFranquiaKm());
         veiculo.setLocadora(request.getLocadora());
         veiculo.setNumeroContrato(request.getNumeroContrato());
         veiculo.setOsCliente(request.getOsCliente());
         veiculo.setValorAluguel(request.getValorAluguel());
-        veiculo.setKmAtual(request.getKmAtual());
+        veiculo.setDataAtual(LocalDate.now());
 
         Veiculo atualizado = veiculoRepository.save(veiculo);
+
+        // ✅ Registro no histórico
+        registroHistoricoService.registrar(
+                "ATUALIZADO",
+                "Veiculo",
+                atualizado.getId(),
+                "Veículo atualizado com placa " + atualizado.getPlaca()
+        );
 
         return VeiculoResponse.builder()
                 .id(atualizado.getId())

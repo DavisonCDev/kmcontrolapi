@@ -7,10 +7,12 @@ import com.oksmart.kmcontrolapi.dto.VeiculoResponse;
 import com.oksmart.kmcontrolapi.exception.VeiculoNotFoundException;
 import com.oksmart.kmcontrolapi.model.Veiculo;
 import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
+import com.oksmart.kmcontrolapi.service.historico.RegistroHistoricoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +22,9 @@ class VeiculoAtualizarOsClienteServiceTest {
 
     @Mock
     private VeiculoRepository veiculoRepository;
+
+    @Mock
+    private RegistroHistoricoService registroHistoricoService;
 
     @InjectMocks
     private VeiculoAtualizarOsClienteService service;
@@ -46,7 +51,15 @@ class VeiculoAtualizarOsClienteServiceTest {
         VeiculoResponse response = service.atualizar(id, request);
 
         assertEquals("OS78910", response.getOsCliente());
+        assertEquals(LocalDate.now(), veiculo.getDataAtual());
         verify(veiculoRepository).save(veiculo);
+
+        verify(registroHistoricoService).registrar(
+                eq("ATUALIZADO"),
+                eq("Veiculo"),
+                eq(id),
+                eq("OS Cliente alterada para: OS78910")
+        );
     }
 
     @Test
@@ -59,7 +72,7 @@ class VeiculoAtualizarOsClienteServiceTest {
 
         assertThrows(VeiculoNotFoundException.class, () ->
                 service.atualizar(999L, request));
+
+        verify(registroHistoricoService, never()).registrar(any(), any(), any(), any());
     }
-
-
 }

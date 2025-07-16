@@ -6,6 +6,7 @@ import com.oksmart.kmcontrolapi.dto.VeiculoCreateRequest;
 import com.oksmart.kmcontrolapi.dto.VeiculoResponse;
 import com.oksmart.kmcontrolapi.model.Veiculo;
 import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
+import com.oksmart.kmcontrolapi.service.historico.RegistroHistoricoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 public class VeiculoCreateService {
 
     private final VeiculoRepository veiculoRepository;
+    private final RegistroHistoricoService registroHistoricoService;
 
     public VeiculoResponse criar(VeiculoCreateRequest request) {
         Veiculo veiculo = Veiculo.builder()
@@ -39,6 +41,14 @@ public class VeiculoCreateService {
 
         Veiculo salvo = veiculoRepository.save(veiculo);
 
+        // ✅ Registro no histórico após salvar
+        registroHistoricoService.registrar(
+                "CRIADO",
+                "Veiculo",
+                salvo.getId(),
+                "Veículo criado com placa " + salvo.getPlaca()
+        );
+
         return VeiculoResponse.builder()
                 .id(salvo.getId())
                 .marca(salvo.getMarca())
@@ -46,6 +56,7 @@ public class VeiculoCreateService {
                 .cor(salvo.getCor())
                 .placa(salvo.getPlaca())
                 .kmInicial(salvo.getKmInicial())
+                .kmAtual(salvo.getKmAtual())
                 .dataRegistro(salvo.getDataRegistro())
                 .condutorPrincipal(salvo.getCondutorPrincipal())
                 .condutorResponsavel(salvo.getCondutorResponsavel())

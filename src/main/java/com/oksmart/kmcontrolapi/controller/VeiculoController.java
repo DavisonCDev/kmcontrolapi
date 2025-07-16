@@ -56,7 +56,7 @@ public class VeiculoController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir um veículo por ID")
     public ResponseEntity<Void> deletarVeiculo(@PathVariable Long id) {
-        veiculoDeleteService.deletarPorId(id);
+        veiculoDeleteService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
