@@ -1,63 +1,56 @@
+// src/test/java/com/oksmart/kmcontrolapi/service/delete/VeiculoDeleteServiceTest.java
 package com.oksmart.kmcontrolapi.service.delete;
 
-import com.oksmart.kmcontrolapi.exception.VeiculoNotFoundException;
-import com.oksmart.kmcontrolapi.model.Veiculo;
+import com.oksmart.kmcontrolapi.exception.ResourceNotFoundException;
 import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
-import com.oksmart.kmcontrolapi.service.historico.RegistroHistoricoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.util.Optional;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class VeiculoDeleteServiceTest {
 
     @Mock
     private VeiculoRepository veiculoRepository;
 
-    @Mock
-    private RegistroHistoricoService registroHistoricoService;
-
     @InjectMocks
     private VeiculoDeleteService deleteService;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void deveDeletarVeiculoComSucesso() {
+    void testDeleteVeiculo_Success() {
         Long id = 1L;
-        Veiculo veiculo = Veiculo.builder()
-                .id(id)
-                .placa("ABC1234")
-                .build();
 
-        when(veiculoRepository.findById(id)).thenReturn(Optional.of(veiculo));
+        when(veiculoRepository.existsById(id)).thenReturn(true);
+        doNothing().when(veiculoRepository).deleteById(id);
 
-        deleteService.deletar(id);
+        deleteService.deleteVeiculo(id);
 
-        verify(veiculoRepository).deleteById(id);
-        verify(registroHistoricoService).registrar(
-                eq("DELETADO"),
-                eq("Veiculo"),
-                eq(id),
-                eq("Veículo com placa ABC1234 foi deletado do sistema")
-        );
+        verify(veiculoRepository, times(1)).existsById(id);
+        verify(veiculoRepository, times(1)).deleteById(id);
     }
 
     @Test
-    void deveLancarExcecaoQuandoVeiculoNaoExistir() {
-        Long id = 99L;
-        when(veiculoRepository.findById(id)).thenReturn(Optional.empty());
+    void testDeleteVeiculo_NotFound() {
+        Long id = 1L;
 
-        assertThrows(VeiculoNotFoundException.class, () -> deleteService.deletar(id));
+        when(veiculoRepository.existsById(id)).thenReturn(false);
 
-        verify(veiculoRepository, never()).deleteById(any());
-        verify(registroHistoricoService, never()).registrar(any(), any(), any(), any());
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            deleteService.deleteVeiculo(id);
+        });
+
+        assertTrue(exception.getMessage().contains("Veículo não encontrado"));
+        verify(veiculoRepository, times(1)).existsById(id);
+        verify(veiculoRepository, never()).deleteById(id);
     }
 }

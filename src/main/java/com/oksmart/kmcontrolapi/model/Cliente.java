@@ -1,4 +1,4 @@
-// src/main/java/com/oksmart/kmcontrolapi/model/Veiculo.java
+// src/main/java/com/oksmart/kmcontrolapi/model/Cliente.java
 package com.oksmart.kmcontrolapi.model;
 
 import jakarta.persistence.*;
@@ -8,30 +8,25 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "veiculos")
+@Table(name = "clientes")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Veiculo {
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String marca;
+    private String nome;
 
-    private String modelo;
+    @Column(name = "os", nullable = false)
+    private String os;
 
-    @Column(unique = true, nullable = false)
-    private String placa;
-
-    private String cor;
-
-    private String locadora;
-
-    private Integer km;
+    @Embedded
+    private Endereco endereco;
 
     @CreationTimestamp
     @Column(name = "data_atual", nullable = false, updatable = false)

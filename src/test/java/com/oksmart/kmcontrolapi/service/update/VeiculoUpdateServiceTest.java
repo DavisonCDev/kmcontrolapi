@@ -1,19 +1,14 @@
-// Caminho: src/test/java/com/oksmart/kmcontrolapi/service/update/VeiculoUpdateServiceTest.java
-
+// src/test/java/com/oksmart/kmcontrolapi/service/update/VeiculoUpdateServiceTest.java
 package com.oksmart.kmcontrolapi.service.update;
 
-import com.oksmart.kmcontrolapi.dto.VeiculoUpdateRequest;
-import com.oksmart.kmcontrolapi.dto.VeiculoResponse;
-import com.oksmart.kmcontrolapi.exception.VeiculoNotFoundException;
+import com.oksmart.kmcontrolapi.exception.ResourceNotFoundException;
 import com.oksmart.kmcontrolapi.model.Veiculo;
 import com.oksmart.kmcontrolapi.repository.VeiculoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Optional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,7 +19,7 @@ class VeiculoUpdateServiceTest {
     private VeiculoRepository veiculoRepository;
 
     @InjectMocks
-    private VeiculoUpdateService veiculoUpdateService;
+    private VeiculoUpdateService updateService;
 
     @BeforeEach
     void setUp() {
@@ -32,96 +27,52 @@ class VeiculoUpdateServiceTest {
     }
 
     @Test
-    void deveAtualizarVeiculoQuandoIdExistir() {
-        Long id = 1L;
-
+    void testUpdateVeiculo_Success() {
         Veiculo existente = Veiculo.builder()
-                .id(id)
-                .marca("Fiat")
-                .modelo("Uno")
-                .cor("Vermelho")
-                .placa("ABC1234")
-                .kmInicial(10000)
-                .kmAtual(10001)
-                .dataRegistro(LocalDate.of(2025, 6, 30))
-                .build();
-
-        VeiculoUpdateRequest request = VeiculoUpdateRequest.builder()
+                .id(1L)
                 .marca("Toyota")
                 .modelo("Corolla")
-                .cor("Preto")
-                .placa("XYZ9999")
-                .kmInicial(12000)
-                .dataRegistro(LocalDate.of(2025, 7, 1))
-                .condutorPrincipal("João Silva")
-                .condutorResponsavel("Carlos Souza")
-                .diarias(15)
-                .franquiaKm(3000)
-                .locadora("Localiza")
-                .numeroContrato("CT123456")
-                .osCliente("OS98765")
-                .valorAluguel(new BigDecimal("1999.99"))
+                .placa("ABC1234")
+                .cor("Prata")
+                .locadora("Locadora X")
+                .km(10000)
                 .build();
 
         Veiculo atualizado = Veiculo.builder()
-                .id(id)
-                .marca(request.getMarca())
-                .modelo(request.getModelo())
-                .cor(request.getCor())
-                .placa(request.getPlaca())
-                .kmInicial(request.getKmInicial())
-                .dataRegistro(request.getDataRegistro())
-                .condutorPrincipal(request.getCondutorPrincipal())
-                .condutorResponsavel(request.getCondutorResponsavel())
-                .diarias(request.getDiarias())
-                .franquiaKm(request.getFranquiaKm())
-                .locadora(request.getLocadora())
-                .numeroContrato(request.getNumeroContrato())
-                .osCliente(request.getOsCliente())
-                .valorAluguel(request.getValorAluguel())
+                .marca("Toyota")
+                .modelo("Corolla Altis")
+                .placa("ABC1234")
+                .cor("Preto")
+                .locadora("Locadora Y")
+                .km(12000)
                 .build();
 
-        when(veiculoRepository.findById(id)).thenReturn(Optional.of(existente));
-        when(veiculoRepository.save(any(Veiculo.class))).thenReturn(atualizado);
+        when(veiculoRepository.findById(1L)).thenReturn(java.util.Optional.of(existente));
+        when(veiculoRepository.save(any(Veiculo.class))).thenAnswer(i -> i.getArgument(0));
 
-        // Act
-        VeiculoResponse response = veiculoUpdateService.atualizar(id, request);
+        Veiculo resultado = updateService.updateVeiculo(1L, atualizado);
 
-        // Assert
-        assertNotNull(response);
-        assertEquals("Toyota", response.getMarca());
-        assertEquals("Corolla", response.getModelo());
-        assertEquals("João Silva", response.getCondutorPrincipal());
-        assertEquals("Carlos Souza", response.getCondutorResponsavel());
-        assertEquals(15, response.getDiarias());
-        assertEquals(3000, response.getFranquiaKm());
-        assertEquals("Localiza", response.getLocadora());
-        assertEquals("CT123456", response.getNumeroContrato());
-        assertEquals("OS98765", response.getOsCliente());
-        assertEquals(new BigDecimal("1999.99"), response.getValorAluguel());
-
-        verify(veiculoRepository).save(any(Veiculo.class));
+        assertNotNull(resultado);
+        assertEquals("Corolla Altis", resultado.getModelo());
+        assertEquals("Preto", resultado.getCor());
+        assertEquals("Locadora Y", resultado.getLocadora());
+        assertEquals(12000, resultado.getKm());
+        verify(veiculoRepository, times(1)).findById(1L);
+        verify(veiculoRepository, times(1)).save(any(Veiculo.class));
     }
 
     @Test
-    void deveLancarExcecaoQuandoVeiculoNaoExistir() {
-        Long idInvalido = 999L;
+    void testUpdateVeiculo_NotFound() {
+        Veiculo atualizado = Veiculo.builder().marca("Toyota").build();
 
-        when(veiculoRepository.findById(idInvalido)).thenReturn(Optional.empty());
+        when(veiculoRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
-        VeiculoUpdateRequest request = VeiculoUpdateRequest.builder()
-                .marca("Honda")
-                .modelo("Civic")
-                .cor("Cinza")
-                .placa("HON1234")
-                .kmInicial(15000)
-                .dataRegistro(LocalDate.now())
-                .build();
-
-        assertThrows(VeiculoNotFoundException.class, () -> {
-            veiculoUpdateService.atualizar(idInvalido, request);
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+            updateService.updateVeiculo(1L, atualizado);
         });
 
-        verify(veiculoRepository, never()).save(any());
+        assertEquals("Veículo não encontrado com id: 1", exception.getMessage());
+        verify(veiculoRepository, times(1)).findById(1L);
+        verify(veiculoRepository, never()).save(any(Veiculo.class));
     }
 }
