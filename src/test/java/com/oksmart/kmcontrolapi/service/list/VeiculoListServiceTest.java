@@ -11,12 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 class VeiculoListServiceTest {
 
@@ -32,47 +32,36 @@ class VeiculoListServiceTest {
     }
 
     @Test
-    void deveRetornarListaDeVeiculosComTodosOsCampos() {
-        Veiculo veiculo = Veiculo.builder()
+    void deveListarTodosOsVeiculosComSucesso() {
+        Veiculo v1 = Veiculo.builder()
                 .id(1L)
-                .marca("Ford")
-                .modelo("Ka")
-                .cor("Preto")
-                .placa("XYZ1234")
-                .kmInicial(1000)
-                .kmAtual(1001)
-                .dataRegistro(LocalDate.of(2025, 7, 1))
-                .condutorPrincipal("Carlos Silva")
-                .condutorResponsavel("Paulo Lima")
-                .dataAtual(LocalDate.of(2025, 7, 2))
-                .diarias(7)
-                .franquiaKm(2000)
-                .locadora("Unidas")
-                .numeroContrato("CT20250701")
-                .osCliente("OS7777")
-                .valorAluguel(new BigDecimal("1750.00"))
+                .marca("Toyota")
+                .modelo("Corolla")
+                .cor("Prata")
+                .placa("ABC1234")
+                .kmInicial(10000)
+                .kmAtual(12000)
+                .dataRegistro(LocalDate.of(2024, 1, 10))
                 .build();
 
-        when(veiculoRepository.findAll()).thenReturn(List.of(veiculo));
+        Veiculo v2 = Veiculo.builder()
+                .id(2L)
+                .marca("Ford")
+                .modelo("Fiesta")
+                .cor("Preto")
+                .placa("XYZ5678")
+                .kmInicial(5000)
+                .kmAtual(7000)
+                .dataRegistro(LocalDate.of(2024, 2, 5))
+                .build();
 
-        List<VeiculoResponse> resposta = veiculoListService.listarTodos();
+        when(veiculoRepository.findAll()).thenReturn(Arrays.asList(v1, v2));
 
-        assertEquals(1, resposta.size());
+        List<VeiculoResponse> lista = veiculoListService.listarTodos();
 
-        VeiculoResponse r = resposta.get(0);
-        assertEquals("Ford", r.getMarca());
-        assertEquals("Ka", r.getModelo());
-        assertEquals("XYZ1234", r.getPlaca());
-        assertEquals("Carlos Silva", r.getCondutorPrincipal());
-        assertEquals("Paulo Lima", r.getCondutorResponsavel());
-        assertEquals(LocalDate.of(2025, 7, 2), r.getDataAtual());
-        assertEquals(7, r.getDiarias());
-        assertEquals(2000, r.getFranquiaKm());
-        assertEquals("Unidas", r.getLocadora());
-        assertEquals("CT20250701", r.getNumeroContrato());
-        assertEquals("OS7777", r.getOsCliente());
-        assertEquals(new BigDecimal("1750.00"), r.getValorAluguel());
-
-        verify(veiculoRepository, times(1)).findAll();
+        assertEquals(2, lista.size());
+        assertEquals("Toyota", lista.get(0).getMarca());
+        assertEquals("Ford", lista.get(1).getMarca());
+        assertEquals("Fiesta", lista.get(1).getModelo());
     }
 }

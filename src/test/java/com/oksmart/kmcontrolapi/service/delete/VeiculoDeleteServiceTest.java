@@ -1,5 +1,3 @@
-// Caminho: src/test/java/com/oksmart/kmcontrolapi/service/delete/VeiculoDeleteServiceTest.java
-
 package com.oksmart.kmcontrolapi.service.delete;
 
 import com.oksmart.kmcontrolapi.exception.VeiculoNotFoundException;
@@ -12,8 +10,8 @@ import org.mockito.*;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class VeiculoDeleteServiceTest {
 
@@ -24,7 +22,7 @@ class VeiculoDeleteServiceTest {
     private RegistroHistoricoService registroHistoricoService;
 
     @InjectMocks
-    private VeiculoDeleteService service;
+    private VeiculoDeleteService deleteService;
 
     @BeforeEach
     void setup() {
@@ -32,32 +30,32 @@ class VeiculoDeleteServiceTest {
     }
 
     @Test
-    void deveDeletarVeiculoComRegistroDeHistorico() {
+    void deveDeletarVeiculoComSucesso() {
         Long id = 1L;
         Veiculo veiculo = Veiculo.builder()
                 .id(id)
-                .placa("XYZ-1234")
+                .placa("ABC1234")
                 .build();
 
         when(veiculoRepository.findById(id)).thenReturn(Optional.of(veiculo));
 
-        service.deletar(id);
+        deleteService.deletar(id);
 
         verify(veiculoRepository).deleteById(id);
         verify(registroHistoricoService).registrar(
                 eq("DELETADO"),
                 eq("Veiculo"),
                 eq(id),
-                eq("Veículo com placa XYZ-1234 foi deletado do sistema")
+                eq("Veículo com placa ABC1234 foi deletado do sistema")
         );
     }
 
     @Test
-    void deveLancarExcecaoSeNaoEncontrarVeiculo() {
-        Long id = 999L;
+    void deveLancarExcecaoQuandoVeiculoNaoExistir() {
+        Long id = 99L;
         when(veiculoRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThrows(VeiculoNotFoundException.class, () -> service.deletar(id));
+        assertThrows(VeiculoNotFoundException.class, () -> deleteService.deletar(id));
 
         verify(veiculoRepository, never()).deleteById(any());
         verify(registroHistoricoService, never()).registrar(any(), any(), any(), any());
